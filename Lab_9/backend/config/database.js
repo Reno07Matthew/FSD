@@ -1,10 +1,14 @@
 const mysql = require('mysql2/promise');
 
 const dbConfig = {
-  host: process.env.DB_HOST || 'localhost',
-  user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || '',
-  database: process.env.DB_NAME || 'user_management'
+  host: process.env.DB_HOST || 'cyber-tech-renorejimatthew07-f012.b.aivencloud.com',
+  user: process.env.DB_USER || 'avnadmin',
+  password: process.env.DB_PASSWORD || 'AVNS_jG5_uF62Hkv2gLWddRN',
+  database: process.env.DB_NAME || 'defaultdb', // must exist in Aiven
+  port: process.env.DB_PORT || 25948,
+  ssl: {
+    rejectUnauthorized: false // Aiven requires SSL
+  }
 };
 
 let connection;
@@ -12,31 +16,20 @@ let connection;
 const createConnection = async () => {
   try {
     connection = await mysql.createConnection(dbConfig);
-    console.log('Connected to MySQL database');
+    console.log('✅ Connected to Aiven MySQL');
     return connection;
   } catch (error) {
-    console.error('Error connecting to database:', error);
+    console.error('❌ Error connecting to database:', error);
     throw error;
   }
 };
 
 const initializeDatabase = async () => {
   try {
-    // First connect without database to create it if it doesn't exist
-    const tempConnection = await mysql.createConnection({
-      host: dbConfig.host,
-      user: dbConfig.user,
-      password: dbConfig.password
-    });
-
-    // Create database if it doesn't exist
-    await tempConnection.execute(`CREATE DATABASE IF NOT EXISTS ${dbConfig.database}`);
-    await tempConnection.end();
-
-    // Now connect to the database
+    // Just connect directly (don’t try CREATE DATABASE on Aiven)
     connection = await createConnection();
 
-    // Create users table if it doesn't exist
+    // Ensure users table exists
     const createUsersTable = `
       CREATE TABLE IF NOT EXISTS users (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -51,9 +44,9 @@ const initializeDatabase = async () => {
     `;
 
     await connection.execute(createUsersTable);
-    console.log('Database and tables initialized successfully');
+    console.log('✅ Tables initialized successfully');
   } catch (error) {
-    console.error('Error initializing database:', error);
+    console.error('❌ Error initializing database:', error);
     throw error;
   }
 };
