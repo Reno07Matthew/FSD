@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberSec Dashboard - Threat Intelligence & Security Monitoring</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .card-hover { transition: transform 0.2s; }
+        .card-hover:hover { transform: translateY(-2px); }
+        .threat-critical { border-left: 4px solid #ef4444; }
+        .threat-high { border-left: 4px solid #f97316; }
+        .threat-medium { border-left: 4px solid #eab308; }
+        .threat-low { border-left: 4px solid #22c55e; }
+        .pulse { animation: pulse 2s infinite; }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Navigation -->
+    <nav class="gradient-bg text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <i class="fas fa-shield-alt text-2xl mr-3"></i>
+                    <h1 class="text-xl font-bold">CyberSec Dashboard</h1>
+                </div>
+                <div class="flex space-x-4">
+                    <button onclick="switchView('dashboard')" class="nav-btn px-3 py-2 rounded-md text-sm font-medium hover:bg-white hover:bg-opacity-20 transition-colors">
+                        <i class="fas fa-chart-line mr-1"></i> Dashboard
+                    </button>
+                    <button onclick="switchView('threats')" class="nav-btn px-3 py-2 rounded-md text-sm font-medium hover:bg-white hover:bg-opacity-20 transition-colors">
+                        <i class="fas fa-exclamation-triangle mr-1"></i> Threat Intel
+                    </button>
+                    <button onclick="switchView('vulnerabilities')" class="nav-btn px-3 py-2 rounded-md text-sm font-medium hover:bg-white hover:bg-opacity-20 transition-colors">
+                        <i class="fas fa-bug mr-1"></i> Vulnerabilities
+                    </button>
+                    <button onclick="switchView('analytics')" class="nav-btn px-3 py-2 rounded-md text-sm font-medium hover:bg-white hover:bg-opacity-20 transition-colors">
+                        <i class="fas fa-chart-pie mr-1"></i> Analytics
+                    </button>
+                    <button onclick="switchView('network')" class="nav-btn px-3 py-2 rounded-md text-sm font-medium hover:bg-white hover:bg-opacity-20 transition-colors">
+                        <i class="fas fa-network-wired mr-1"></i> Network
+                    </button>
+                    <button onclick="switchView('tools')" class="nav-btn px-3 py-2 rounded-md text-sm font-medium hover:bg-white hover:bg-opacity-20 transition-colors">
+                        <i class="fas fa-tools mr-1"></i> Security Tools
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- Dashboard View -->
+        <div id="dashboard-view" class="view">
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+                <div class="bg-white rounded-lg shadow-md p-6 card-hover cursor-pointer" onclick="showDetailModal('threats')">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-exclamation-triangle text-3xl text-red-500"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-500">Active Threats</p>
+                            <p class="text-2xl font-semibold text-gray-900" id="threats-count">0</p>
+                            <p class="text-xs text-red-600 font-medium" id="threats-change">+12% this week</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6 card-hover cursor-pointer" onclick="showDetailModal('events')">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-shield-alt text-3xl text-blue-500"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-500">Security Events</p>
+                            <p class="text-2xl font-semibold text-gray-900" id="events-count">0</p>
+                            <p class="text-xs text-blue-600 font-medium" id="events-change">+8% today</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6 card-hover cursor-pointer" onclick="showDetailModal('vulnerabilities')">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-bug text-3xl text-orange-500"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-500">Vulnerabilities</p>
+                            <p class="text-2xl font-semibold text-gray-900" id="vulns-count">0</p>
+                            <p class="text-xs text-orange-600 font-medium" id="vulns-change">-3% patched</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6 card-hover cursor-pointer" onclick="showDetailModal('malware')">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-virus text-3xl text-purple-500"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-500">Malware Detected</p>
+                            <p class="text-2xl font-semibold text-gray-900" id="malware-count">0</p>
+                            <p class="text-xs text-purple-600 font-medium" id="malware-change">+5 signatures</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6 card-hover">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-clock text-3xl text-green-500"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-500">System Uptime</p>
+                            <p class="text-2xl font-semibold text-gray-900" id="uptime-display">99.9%</p>
+                            <p class="text-xs text-green-600 font-medium">Last 30 days</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Row -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-semibold mb-4 flex items-center">
+                        <i class="fas fa-chart-pie mr-2 text-indigo-500"></i>
+                        Threat Severity Distribution
+                    </h3>
+                    <div class="relative h-64">
+                        <canvas id="threatChart"></canvas>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-semibold mb-4 flex items-center">
+                        <i class="fas fa-chart-line mr-2 text-blue-500"></i>
+                        Security Events Timeline (7 Days)
+                    </h3>
+                    <div class="relative h-64">
+                        <canvas id="eventsChart"></canvas>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-semibold mb-4 flex items-center">
+                        <i class="fas fa-chart-bar mr-2 text-green-500"></i>
+                        Attack Types Distribution
+                    </h3>
+                    <div class="relative h-64">
+                        <canvas id="attackTypesChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Additional Analytics Row -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-semibold mb-4 flex items-center">
+                        <i class="fas fa-globe mr-2 text-purple-500"></i>
+                        Geographic Threat Distribution
+                    </h3>
+                    <div class="relative h-64">
+                        <canvas id="geoChart"></canvas>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-semibold mb-4 flex items-center">
+                        <i class="fas fa-clock mr-2 text-orange-500"></i>
+                        Hourly Threat Activity
+                    </h3>
+                    <div class="relative h-64">
+                        <canvas id="hourlyChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-lg font-semibold mb-4">Recent Security Events</h3>
+                <div id="recent-events" class="space-y-3">
+                    <!-- Dynamic content will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Threats View -->
+        <div id="threats-view" class="view hidden">
+            <div class="bg-white rounded-lg shadow-md">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h3 class="text-lg font-semibold">Threat Intelligence Feed</h3>
+                    <p class="text-sm text-gray-600">Real-time threat indicators and malicious activities</p>
+                </div>
+                <div class="p-6">
+                    <div id="threats-list" class="space-y-4">
+                        <!-- Dynamic content will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vulnerabilities View -->
+        <div id="vulnerabilities-view" class="view hidden">
+            <div class="bg-white rounded-lg shadow-md">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-lg font-semibold">Vulnerability Management</h3>
+                            <p class="text-sm text-gray-600">Track and manage security vulnerabilities</p>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors">
+                                <i class="fas fa-download mr-2"></i>Export Report
+                            </button>
+                            <button class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors">
+                                <i class="fas fa-plus mr-2"></i>Add Vulnerability
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <div id="vulnerabilities-list" class="space-y-4">
+                        <!-- Dynamic content will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics View -->
+        <div id="analytics-view" class="view hidden">
+            <div class="mb-8">
+                <h2 class="text-2xl font-bold text-gray-900 mb-4">Security Analytics & Intelligence</h2>
+                
+                <!-- Analytics Stats -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg p-6 text-white">
+                        <div class="flex items-center">
+                            <i class="fas fa-search text-3xl mr-4"></i>
+                            <div>
+                                <p class="text-blue-100">Scans Today</p>
+                                <p class="text-2xl font-bold" id="scans-today">245</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-r from-purple-500 to-purple-600 rounded-lg p-6 text-white">
+                        <div class="flex items-center">
+                            <i class="fas fa-eye text-3xl mr-4"></i>
+                            <div>
+                                <p class="text-purple-100">Detection Rate</p>
+                                <p class="text-2xl font-bold" id="detection-rate">94.2%</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-r from-red-500 to-red-600 rounded-lg p-6 text-white">
+                        <div class="flex items-center">
+                            <i class="fas fa-ban text-3xl mr-4"></i>
+                            <div>
+                                <p class="text-red-100">Blocked Attacks</p>
+                                <p class="text-2xl font-bold" id="blocked-attacks">1,847</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-r from-green-500 to-green-600 rounded-lg p-6 text-white">
+                        <div class="flex items-center">
+                            <i class="fas fa-check-circle text-3xl mr-4"></i>
+                            <div>
+                                <p class="text-green-100">Response Time</p>
+                                <p class="text-2xl font-bold" id="response-time">1.2s</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Advanced Charts -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <h3 class="text-lg font-semibold mb-4">Threat Trends (30 Days)</h3>
+                        <canvas id="trendChart" class="w-full h-64"></canvas>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <h3 class="text-lg font-semibold mb-4">Risk Assessment Matrix</h3>
+                        <canvas id="riskChart" class="w-full h-64"></canvas>
+                    </div>
+                </div>
+
+                <!-- Detailed Analytics Table -->
+                <div class="bg-white rounded-lg shadow-md">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-lg font-semibold">Detailed Threat Analytics</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Threat Type</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Count</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Severity</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Trend</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="analytics-table" class="bg-white divide-y divide-gray-200">
+                                <!-- Dynamic content -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Network View -->
+        <div id="network-view" class="view hidden">
+            <div class="mb-8">
+                <h2 class="text-2xl font-bold text-gray-900 mb-4">Network Security Monitoring</h2>
+                
+                <!-- Network Stats -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">Network Health</p>
+                                <p class="text-2xl font-semibold text-green-600">Excellent</p>
+                            </div>
+                            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-heart text-2xl text-green-600"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">Active Connections</p>
+                                <p class="text-2xl font-semibold text-blue-600" id="active-connections">1,247</p>
+                            </div>
+                            <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-network-wired text-2xl text-blue-600"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">Bandwidth Usage</p>
+                                <p class="text-2xl font-semibold text-purple-600">78.5 GB</p>
+                            </div>
+                            <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-chart-area text-2xl text-purple-600"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Network Visualization -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <h3 class="text-lg font-semibold mb-4">Network Traffic Flow</h3>
+                        <canvas id="trafficChart" class="w-full h-64"></canvas>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <h3 class="text-lg font-semibold mb-4">Protocol Distribution</h3>
+                        <canvas id="protocolChart" class="w-full h-64"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Security Tools View -->
+        <div id="tools-view" class="view hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                <!-- Network Scanner -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-semibold mb-4">
+                        <i class="fas fa-network-wired mr-2 text-blue-500"></i>
+                        Advanced Network Scanner
+                    </h3>
+                    <form id="network-scan-form" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Target Network</label>
+                            <input type="text" id="scan-target" value="192.168.1.0/24" 
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Scan Type</label>
+                            <select id="scan-type" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="quick">Quick Scan</option>
+                                <option value="deep">Deep Scan</option>
+                                <option value="stealth">Stealth Scan</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors">
+                            <i class="fas fa-search mr-2"></i>Start Scan
+                        </button>
+                    </form>
+                    <div id="scan-results" class="mt-4 hidden">
+                        <!-- Scan results will appear here -->
+                    </div>
+                </div>
+
+                <!-- Hash Analyzer -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-semibold mb-4">
+                        <i class="fas fa-fingerprint mr-2 text-purple-500"></i>
+                        Advanced Hash Analyzer
+                    </h3>
+                    <form id="hash-analysis-form" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">File Hash (MD5/SHA256)</label>
+                            <input type="text" id="hash-input" placeholder="Enter file hash..." 
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Hash Type</label>
+                            <select id="hash-type" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                <option value="auto">Auto Detect</option>
+                                <option value="md5">MD5</option>
+                                <option value="sha1">SHA1</option>
+                                <option value="sha256">SHA256</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="w-full bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700 transition-colors">
+                            <i class="fas fa-search mr-2"></i>Analyze Hash
+                        </button>
+                    </form>
+                    <div id="hash-results" class="mt-4 hidden">
+                        <!-- Hash analysis results will appear here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Additional Security Tools -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Port Scanner -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-semibold mb-4">
+                        <i class="fas fa-door-open mr-2 text-green-500"></i>
+                        Port Scanner
+                    </h3>
+                    <form id="port-scan-form" class="space-y-4">
+                        <input type="text" id="port-target" placeholder="Target IP (e.g., 192.168.1.1)" 
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                        <button type="submit" class="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 transition-colors">
+                            <i class="fas fa-search mr-2"></i>Scan Ports
+                        </button>
+                    </form>
+                    <div id="port-results" class="mt-4 hidden">
+                        <!-- Port scan results -->
+                    </div>
+                </div>
+
+                <!-- DNS Lookup -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-semibold mb-4">
+                        <i class="fas fa-globe mr-2 text-indigo-500"></i>
+                        DNS Lookup
+                    </h3>
+                    <form id="dns-lookup-form" class="space-y-4">
+                        <input type="text" id="dns-target" placeholder="Domain (e.g., example.com)" 
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <button type="submit" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition-colors">
+                            <i class="fas fa-search mr-2"></i>Lookup DNS
+                        </button>
+                    </form>
+                    <div id="dns-results" class="mt-4 hidden">
+                        <!-- DNS results -->
+                    </div>
+                </div>
+
+                <!-- Whois Lookup -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-semibold mb-4">
+                        <i class="fas fa-info-circle mr-2 text-yellow-500"></i>
+                        Whois Lookup
+                    </h3>
+                    <form id="whois-form" class="space-y-4">
+                        <input type="text" id="whois-target" placeholder="Domain or IP" 
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                        <button type="submit" class="w-full bg-yellow-600 text-white py-2 px-4 rounded-md hover:bg-yellow-700 transition-colors">
+                            <i class="fas fa-search mr-2"></i>Whois Lookup
+                        </button>
+                    </form>
+                    <div id="whois-results" class="mt-4 hidden">
+                        <!-- Whois results -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detail Modal -->
+    <div id="detail-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-screen overflow-y-auto">
+                <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+                    <h3 id="modal-title" class="text-lg font-semibold">Detail View</h3>
+                    <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                <div id="modal-content" class="p-6">
+                    <!-- Dynamic content will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <p class="text-sm">&copy; 2024 CyberSec Dashboard. Built with Node.js, Express, and Tailwind CSS.</p>
+                <p class="text-xs text-gray-400 mt-2">For educational and demonstration purposes only.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
