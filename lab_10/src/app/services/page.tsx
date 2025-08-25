@@ -161,7 +161,7 @@ export default function Services() {
             Ready to Start Your Project?
           </h2>
           <p className="text-xl text-gray-300 mb-8">
-            Let's discuss how we can help bring your vision to life
+            Let&apos;s discuss how we can help bring your vision to life
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button className="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors duration-200">

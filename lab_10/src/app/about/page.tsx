@@ -31,7 +31,7 @@ export default function About() {
               </p>
               <p className="text-lg text-gray-600">
                 Since our founding, we have been committed to delivering exceptional digital 
-                experiences that exceed our clients' expectations and drive real business results.
+                experiences that exceed our clients&apos; expectations and drive real business results.
               </p>
             </div>
             <div className="relative h-96 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">

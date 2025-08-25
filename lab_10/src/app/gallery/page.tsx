@@ -101,7 +101,7 @@ export default function Gallery() {
           <div className="text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-6">Our Portfolio</h1>
             <p className="text-xl text-purple-100 max-w-3xl mx-auto">
-              Explore our latest projects and see how we've helped businesses achieve their digital goals.
+              Explore our latest projects and see how we&apos;ve helped businesses achieve their digital goals.
             </p>
           </div>
         </div>
@@ -223,7 +223,7 @@ export default function Gallery() {
             Impressed by Our Work?
           </h2>
           <p className="text-xl text-purple-100 mb-8">
-            Let's create something amazing together
+            Let&apos;s create something amazing together
           </p>
           <button className="bg-white text-purple-600 px-8 py-3 rounded-lg font-semibold hover:bg-purple-50 transition-colors duration-200">
             Start Your Project

@@ -40,7 +40,7 @@ export default function Contact() {
           <div className="text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-6">Contact Us</h1>
             <p className="text-xl text-blue-100 max-w-3xl mx-auto">
-              Ready to start your next project? Get in touch with us and let's discuss how we can help you achieve your goals.
+              Ready to start your next project? Get in touch with us and let&apos;s discuss how we can help you achieve your goals.
             </p>
           </div>
         </div>
@@ -54,7 +54,7 @@ export default function Contact() {
             <div>
               <h2 className="text-3xl font-bold text-gray-900 mb-6">Get in Touch</h2>
               <p className="text-lg text-gray-600 mb-8">
-                We'd love to hear from you. Send us a message and we'll respond as soon as possible.
+                We&apos;d love to hear from you. Send us a message and we&apos;ll respond as soon as possible.
               </p>
 
               <div className="space-y-6">
