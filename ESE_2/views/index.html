@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Catalog System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-4xl font-bold text-center text-blue-800 mb-8">🎬 Movie Catalog System</h1>
+        
+        <!-- Add Movie Form -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <h2 class="text-2xl font-semibold mb-4">Add New Movie</h2>
+            <form id="addMovieForm" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                <input type="text" id="title" placeholder="Title" class="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                <input type="text" id="director" placeholder="Director" class="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                <input type="text" id="genre" placeholder="Genre" class="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                <input type="number" id="release_year" placeholder="Release Year" class="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required min="1900" max="2030">
+                <input type="number" id="rating" placeholder="Rating (0-10)" step="0.1" min="0" max="10" class="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <button type="submit" class="col-span-full bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition-colors">Add Movie</button>
+            </form>
+        </div>
+
+        <!-- Movies List -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-2xl font-semibold mb-4">Movie Catalog</h2>
+            <div id="moviesList" class="grid gap-4">
+                <!-- Movies will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/script.js"></script>
+</body>
+</html>
