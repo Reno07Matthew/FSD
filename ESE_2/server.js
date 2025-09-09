@@ -11,7 +11,7 @@ const PORT = process.env.PORT || 3000;
 // CORS configuration - MOVED TO TOP
 const corsOptions = {
   origin: process.env.NODE_ENV === 'production' 
-    ? [https://movie-topaz-phi.vercel.app/'] 
+    ? [https://fsd-oqt6.vercel.app/'] 
     : ['http://localhost:3000', 'http://localhost:3001'],
   optionsSuccessStatus: 200
 };
