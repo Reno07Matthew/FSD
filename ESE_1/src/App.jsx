@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import BreedCreate from './components/Breedcreate';
+import BreedCreate from './components/BreedCreate';
 import BreedEdit from './components/BreedEdit';
-import BreedList from './components/BreedList';
+import BreedList from './components/Breedlist';
 import BreedShow from './components/BreedShow';
 import './App.css';
 
