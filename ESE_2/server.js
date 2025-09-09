@@ -9,9 +9,16 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // CORS configuration - MOVED TO TOP
+// const corsOptions = {
+//   origin: process.env.NODE_ENV === 'production' 
+//     ? [https://fsd-oqt6.vercel.app/'] 
+//     : ['http://localhost:3000', 'http://localhost:3001'],
+//   optionsSuccessStatus: 200
+// };
+
 const corsOptions = {
   origin: process.env.NODE_ENV === 'production' 
-    ? [https://fsd-oqt6.vercel.app/'] 
+    ? "https://fsd-oqt6.vercel.app/" 
     : ['http://localhost:3000', 'http://localhost:3001'],
   optionsSuccessStatus: 200
 };
