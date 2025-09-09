@@ -8,8 +8,16 @@ const moviesRoutes = require('./routes/movies');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware
-app.use(cors());
+// CORS configuration - MOVED TO TOP
+const corsOptions = {
+  origin: process.env.NODE_ENV === 'production' 
+    ? ['https://your-render-url.onrender.com'] 
+    : ['http://localhost:3000', 'http://localhost:3001'],
+  optionsSuccessStatus: 200
+};
+app.use(cors(corsOptions));
+
+// Other Middleware
 app.use(express.json());
 app.use(express.static('public'));
 app.use(express.urlencoded({ extended: true }));
